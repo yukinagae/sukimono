@@ -1,0 +1,50 @@
+body {
+	background-color: #91DBB9;
+}
+.sidebar {
+	position: fixed;
+	bottom: 0; 
+	left: 0;
+	top: 0;
+	width: 18rem; 
+	text-align: center;
+	background-color: #3DB680;
+	border-right: 6px solid #E7A5C9;  
+}
+.sidebar h1, h2, h3, h4, h5, h6 {
+	color: white;
+}
+.sidebar ul {
+	text-align: left; 
+	color: white; 
+	list-style: none;
+}
+.content {
+	margin-left: 18rem;
+}
+.content h1, h2, h3, h4, h5, h6 {
+	color: black;
+}
+.note {
+	margin-left: 3rem;
+	padding-bottom: 1rem;
+	width: 36rem; 
+	background-color: white;
+	font-family: "Comic Sans MS", cursive, sans-serif
+}
+.note h1, h2, h3, h4, h5, h6 {
+	margin-left: 1rem;
+	padding-top: 1rem;
+}
+.note p {
+	margin-left: 1rem;
+}
+.note hr {
+	border: 1px solid gray;
+}
+.note span {
+	margin-left: 1rem;
+}
+.note .done {
+	background-color: #E7A5C9;
+}
