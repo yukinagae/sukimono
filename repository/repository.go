@@ -1,7 +1,7 @@
 package repository
 
 import (
-// "fmt"
+	_ "fmt"
 )
 
 type Note struct {
@@ -56,21 +56,3 @@ func (repo *Repository) Select(id int) Note {
 func (repo *Repository) Close() {
 	// TODO
 }
-
-// func main() {
-// 	repo := NewRepo()
-// 	// fmt.Println(repo.List())
-
-// 	n1 := NewNote("name1", "content1")
-// 	// fmt.Println(n1)
-// 	repo.Insert(n1)
-
-// 	n2 := NewNote("name2", "content2")
-// 	// fmt.Println(n2)
-// 	repo.Insert(n2)
-
-// 	fmt.Println(repo.List())
-
-// 	fmt.Println(repo.Select(1))
-
-// }

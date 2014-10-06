@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>SUKIMONO</title>
+	<link rel="stylesheet" type="text/css" href="css/sukimono.css">
+</head>
+<body>
+	<div class="sidebar">
+		<h1>SUKIMONO</h1>
+		<ul>
+			<li>About</li>
+			<li>Content</li>
+		</ul>
+	</div>
+	
+
+	<div class="content" data-bind="foreach: notes">
+		<div class="note">
+			<h4 data-bind="text: Name"></h4>
+			<hr/>
+			<p data-bind="text: Content"></p>
+			<span class="done">&#x2715; done</span>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="js/knockout-3.2.0.js"></script>
+	<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript">
+
+		$.getJSON("/api/list", function(data) {
+			console.log(data);
+			notes = ko.observableArray(data);
+			ko.applyBindings(data);
+		});
+
+	</script>
+</body>
+</html>
