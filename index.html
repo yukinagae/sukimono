@@ -15,24 +15,14 @@
 	</div>
 	
 	<div class="content">
+		{{ range $index, $element := . }}
 		<div class="note">
-			<h4>title1</h4>
+			<h4>{{ $element.Name }}</h4>
 			<hr/>
 			<p>content1</p>
 			<span class="done">&#x2715; done</span>
 		</div>
-		<div class="note">
-			<h4>title2</h4>
-			<hr/>
-			<p>content2</p>
-		</div>
-		<div class="note">
-			<h4>title3</h4>
-			<hr/>
-			<p>content3</p>
-			<span class="done">&#x2715; done</span>
-		</div>
+		{{ end }}
 	</div>
-
 </body>
 </html>
