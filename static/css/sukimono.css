@@ -6,7 +6,7 @@ body {
 	bottom: 0; 
 	left: 0;
 	top: 0;
-	width: 18rem; 
+	width: 32rem; 
 	text-align: center;
 	background-color: #3DB680;
 	border-right: 6px solid #E7A5C9;  
@@ -20,7 +20,7 @@ body {
 	list-style: none;
 }
 .content {
-	margin-left: 18rem;
+	margin-left: 32rem;
 }
 .content h1, h2, h3, h4, h5, h6 {
 	color: black;
