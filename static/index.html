@@ -22,26 +22,32 @@
 				<li>
 					<textarea data-bind="value: newContent" style="width: 24rem; height: 8rem;"></textarea>
 				</li>
+				<li>Tags</li>
+				<li>
+					<div data-bind="foreach: newTagModels">
+						<span class="done"><a href='#' data-bind='click: $parent.removeTag'>X</a><span class="done" data-bind="text: $data.Name"></span></span>
+					</div>
+
+				</li>
 			</ul>
-			<div data-bind="foreach: newTagModels">
-					<span><a href='#' data-bind='click: $parent.removeTag'>X</a><span class="done" data-bind="text: $data.Name"></span></span>
-				</div>
+
 			<button type="submit">Save</button>
 			<hr/>
 		</form>
 	</div>
 	
 	<div class="content" data-bind="foreach: notes">
-			<div class="note">
-				<h4 data-bind="text: $data.Name"></h4>
-				<button type="submit" data-bind="click: $data.edit">Edit</button>
-				<hr/>
-				<pre data-bind="text: $data.Content"></pre>
-				<div data-bind="foreach: $data.TagModels">
-					<span class="done" data-bind="text: $data.Name"></span>
-				</div>
-
+		<div class="note" data-bind="click: $data.edit">
+			<h4 data-bind="text: $data.Name"></h4>
+			<!-- <button type="submit" data-bind="click: $data.edit">Edit</button> -->
+			<button type="submit" data-bind="click: $data.putTag">Tag</button>
+			<hr/>
+			<pre data-bind="text: $data.Content"></pre>
+			<div data-bind="foreach: $data.TagModels">
+				<span class="done" data-bind="text: $data.Name"></span>
 			</div>
+
+		</div>
 	</div>
 
 	<script type="text/javascript" src="js/knockout-3.2.0.js"></script>
@@ -77,6 +83,7 @@
 									Model.va.vmodel.notes.remove(n);
 								}
 							});
+							note.Id(data.Id);
 							Model.va.vmodel.notes.push(note);
 						});
 					}
@@ -102,6 +109,10 @@
 						Model.va.vmodel.newName(note.Name() || '');
 						Model.va.vmodel.newContent(note.Content() || '');
 						Model.va.vmodel.newTagModels(note.TagModels() || []);
+					}
+					self.putTag = function(note) {
+						console.log(note);
+						Model.va.vmodel.newTagModels.push(note);
 					}
 				},
 				allList : function() {
