@@ -1,15 +1,17 @@
 body {
-	background-color: #91DBB9;
+	/*background-color: #91DBB9;*/
+	background-color: #F5F5F5;
 }
 .sidebar {
 	position: fixed;
 	bottom: 0; 
 	left: 0;
 	top: 0;
-	width: 18rem; 
+	width: 32rem; 
 	text-align: center;
-	background-color: #3DB680;
-	border-right: 6px solid #E7A5C9;  
+	/*background-color: #3DB680;*/
+	background-color: #1ABC9C;
+	border-right: 6px solid black;  
 }
 .sidebar h1, h2, h3, h4, h5, h6 {
 	color: white;
@@ -20,7 +22,7 @@ body {
 	list-style: none;
 }
 .content {
-	margin-left: 18rem;
+	margin-left: 32rem;
 }
 .content h1, h2, h3, h4, h5, h6 {
 	color: black;
@@ -32,11 +34,14 @@ body {
 	background-color: white;
 	font-family: "Comic Sans MS", cursive, sans-serif
 }
+.note:hover {
+	background-color: #EEE;
+}
 .note h1, h2, h3, h4, h5, h6 {
 	margin-left: 1rem;
 	padding-top: 1rem;
 }
-.note p {
+.note p, pre {
 	margin-left: 1rem;
 }
 .note hr {
@@ -45,6 +50,9 @@ body {
 .note span {
 	margin-left: 1rem;
 }
-.note .done {
+.done {
 	background-color: #E7A5C9;
+}
+.note button {
+	margin-left: 1rem;
 }
