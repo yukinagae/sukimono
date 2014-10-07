@@ -8,8 +8,12 @@
 <body>
 	<div class="sidebar">
 		<h1>SUKIMONO</h1>
-		<form data-bind="submit: addNote">
+		<form data-bind="submit: saveNote">
 			<ul>
+				<li>Id</li>
+				<li>
+					<input data-bind="value: newId" style="width: 6rem;"/>
+				</li>
 				<li>Name</li>
 				<li>
 					<input data-bind="value: newName" style="width: 24rem;"/>
@@ -19,67 +23,112 @@
 					<textarea data-bind="value: newContent" style="width: 24rem; height: 8rem;"></textarea>
 				</li>
 			</ul>
-			<button type="submit">New</button>
+			<div data-bind="foreach: newTagModels">
+					<span><a href='#' data-bind='click: $parent.removeTag'>X</a><span class="done" data-bind="text: $data.Name"></span></span>
+				</div>
+			<button type="submit">Save</button>
 			<hr/>
 		</form>
 	</div>
 	
 	<div class="content" data-bind="foreach: notes">
-		<div class="note">
-			<h4 data-bind="text: $data.Name"></h4>
-			<hr/>
-			<pre data-bind="text: $data.Content"></pre>
-			<span class="done">&#x2715; done</span>
-		</div>
+			<div class="note">
+				<h4 data-bind="text: $data.Name"></h4>
+				<button type="submit" data-bind="click: $data.edit">Edit</button>
+				<hr/>
+				<pre data-bind="text: $data.Content"></pre>
+				<div data-bind="foreach: $data.TagModels">
+					<span class="done" data-bind="text: $data.Name"></span>
+				</div>
+
+			</div>
 	</div>
 
 	<script type="text/javascript" src="js/knockout-3.2.0.js"></script>
 	<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
 	<script type="text/javascript">
 
-			var Model = Model || {};
+		var Model = Model || {};
 
-			Model = {
-				fn : {
-					NoteModels : function() {
-						var self = this;
-						self.notes = ko.observableArray();
-						self.newName = ko.observable("");
-						self.newContent = ko.observable("");
-						self.addNote = function() {
-							var note = new Model.fn.NoteModel({});
-							note.Name = self.newName();
-							note.Content = self.newContent();
-							$.post("/api/new", ko.toJSON(note), function(data) {
-								Model.va.vmodel.notes.push(data);
-							});
-						}
-					},
-					NoteModel : function(data) {
-						var self = this;
-						self.Name = ko.observable(data.Name || '');
-						self.Content = ko.observable(data.Content || '');
-					},
-					connect : function() {
-						$.getJSON("/api/list", function (data) {
-							data.forEach(function (row) {
-								var note = new Model.fn.NoteModel(row);
-								Model.va.vmodel.notes.push(note);
-							});
+		Model = {
+			fn : {
+				NoteModels : function() {
+					var self = this;
+					self.notes = ko.observableArray();
+					self.newId = ko.observable("");
+					self.newName = ko.observable("");
+					self.newContent = ko.observable("");
+					self.newTagModels = ko.observableArray([]);
+					self.saveNote = function() {
+						var note = new Model.fn.NoteModel({});
+						note.Id(self.newId());
+						note.Name(self.newName());
+						note.Content(self.newContent());
+						note.TagModels(self.newTagModels());
+
+						note.TagModels().forEach(function(t){
+							note.Tags.push(t.Id);
 						});
-					},
+
+						$.post("/api/save", ko.toJSON(note), function(data) {
+							self.notes().forEach(function(n, i){
+								if(n.Id() === note.Id()) {
+									console.log("hoge");
+									Model.va.vmodel.notes.remove(n);
+								}
+							});
+							Model.va.vmodel.notes.push(note);
+						});
+					}
+
+					self.removeTag = function(tag) {
+						console.log(tag);
+						console.log(this);
+						console.log(self);
+						self.newTagModels.remove(tag);
+					}
+
 				},
-				va : {
-					vmodel : null
+				NoteModel : function(data) {
+					var self = this;
+					self.Id = ko.observable(data.Id || '');
+					self.Name = ko.observable(data.Name || '');
+					self.Content = ko.observable(data.Content || '');
+					self.Tags = ko.observableArray(data.Tags || []);
+					self.TagModels = ko.observableArray();
+					self.edit = function(note) {
+						console.log(note);
+						Model.va.vmodel.newId(note.Id() || '');
+						Model.va.vmodel.newName(note.Name() || '');
+						Model.va.vmodel.newContent(note.Content() || '');
+						Model.va.vmodel.newTagModels(note.TagModels() || []);
+					}
+				},
+				allList : function() {
+					$.getJSON("/api/list", function (data) {
+						data.forEach(function (row) {
+							var note = new Model.fn.NoteModel(row);
+							note.Tags().forEach(function(id) {
+								$.getJSON("/api/" + id, function (d) {
+									note.TagModels.push(d);
+								});
+							});
+							Model.va.vmodel.notes.push(note);
+						});
+					});
 				}
+			},
+			va : {
+				vmodel : null
 			}
+		}
 
-			$(function() {
-				Model.va.vmodel = new Model.fn.NoteModels();
-				ko.applyBindings(Model.va.vmodel);
-				Model.fn.connect();
-			});
+		$(function() {
+			Model.va.vmodel = new Model.fn.NoteModels();
+			ko.applyBindings(Model.va.vmodel);
+			Model.fn.allList();
+		});
 
-		</script>
-	</body>
-	</html>
+	</script>
+</body>
+</html>

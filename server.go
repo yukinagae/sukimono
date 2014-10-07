@@ -57,19 +57,35 @@ func FindHandler(c *Context) http.HandlerFunc {
 	}
 }
 
-func CreateHandler(c *Context) http.HandlerFunc {
+func SaveHandler(c *Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
 		var note repository.Note
 
 		decoder.Decode(&note)
-		n := c.Repo.Insert(note)
+
+		n := c.Repo.Save(note)
+
 		js, _ := json.Marshal(n)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}
 }
+
+// func UpdateHandler(c *Context) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		decoder := json.NewDecoder(r.Body)
+// 		var note repository.Note
+
+// 		decoder.Decode(&note)
+// 		n := c.Repo.Update(note)
+// 		js, _ := json.Marshal(n)
+
+// 		w.Header().Set("Content-Type", "application/json")
+// 		w.Write(js)
+// 	}
+// }
 
 func main() {
 
@@ -80,14 +96,17 @@ func main() {
 
 	// TODO dummy data
 	n1 := repository.NewNote("name1", "content1")
+	n1.Tags = []int{1}
 	c.Repo.Insert(n1)
 	n2 := repository.NewNote("name2", "content2")
+	n2.Tags = []int{1, 2}
 	c.Repo.Insert(n2)
 
 	// routing
 	r.HandleFunc("/api/list", ListHandler(c)).Methods("GET")
 	r.HandleFunc("/api/{id}", FindHandler(c)).Methods("GET")
-	r.HandleFunc("/api/new", CreateHandler(c)).Methods("POST")
+	r.HandleFunc("/api/save", SaveHandler(c)).Methods("POST")
+	// r.HandleFunc("/api/edit", UpdateHandler(c)).Methods("POST")
 
 	// static files
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))

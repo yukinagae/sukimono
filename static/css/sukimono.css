@@ -48,3 +48,6 @@ body {
 .note .done {
 	background-color: #E7A5C9;
 }
+.note button {
+	margin-left: 1rem;
+}
