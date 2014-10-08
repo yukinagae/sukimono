@@ -73,7 +73,7 @@
 					var self = this;
 					self.notes = ko.observableArray();
 					self.newNote = ko.observable(new Model.fn.NoteModel({}));
-					self.tags = ko.observableArray(["done"]);
+					self.tags = ko.observableArray();
 					self.newCustomTag = ko.observable("");
 					self.saveNote = function() {
 						$.post("/api/save", ko.toJSON(self.newNote()), function(data) {
@@ -116,6 +116,7 @@
 						data.forEach(function (row) {
 							var note = new Model.fn.NoteModel(row);
 							Model.va.vmodel.notes.push(note);
+							Model.va.vmodel.tags.push(row.tags);
 						});
 					});
 				}
