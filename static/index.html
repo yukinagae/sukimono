@@ -4,10 +4,11 @@
 	<meta charset="utf-8">
 	<title>SUKIMONO</title>
 	<link rel="stylesheet" type="text/css" href="css/sukimono.css">
+	<link href='http://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'>
 </head>
 <body>
 	<div class="sidebar">
-		<h1>SUKIMONO</h1>
+		<h1 class="title">SUKIMONO</h1>
 		<form data-bind="submit: saveNote">
 			<ul>
 				<li>Id</li>
@@ -27,15 +28,24 @@
 				<li>Tags</li>
 				<li>
 					<div data-bind="foreach: newNote().tags">
-						<span class="done"><a href='#' data-bind='click: $parent.removeTag'>X</a><span class="done" data-bind="text: $data"></span></span>
+						<span class="tag" data-bind="text: $data, click: $parent.removeTag"></span>
 					</div>
 
 				</li>
 			</ul>
 
 			<button type="submit">Save</button>
-			<hr/>
 		</form>
+
+		<div>
+			<h3>Tags can be added</h3>
+			<div data-bind="foreach: tags">
+				<span class="tag" data-bind="text: $data, click: $parent.addTag"></span>
+			</div>
+			<form data-bind="submit: addCustomTag">
+    			<input data-bind='value: newCustomTag, valueUpdate: "afterkeydown"' />
+			</form>
+		</div>
 	</div>
 	
 	<div class="content" data-bind="foreach: notes">
@@ -46,9 +56,8 @@
 			<hr/>
 			<pre data-bind="text: $data.content"></pre>
 			<div data-bind="foreach: $data.tags">
-				<span class="done" data-bind="text: $data"></span>
+				<span class="tag" data-bind="text: $data"></span>
 			</div>
-
 		</div>
 	</div>
 
@@ -64,6 +73,8 @@
 					var self = this;
 					self.notes = ko.observableArray();
 					self.newNote = ko.observable(new Model.fn.NoteModel({}));
+					self.tags = ko.observableArray(["done"]);
+					self.newCustomTag = ko.observable("");
 					self.saveNote = function() {
 						$.post("/api/save", ko.toJSON(self.newNote()), function(data) {
 							var n = new Model.fn.NoteModel({});
@@ -78,6 +89,14 @@
 					}
 					self.removeTag = function(tag) {
 						self.newNote().tags.remove(tag);
+					}
+					self.addTag = function(tag) {
+						console.log(tag);
+						self.newNote().tags.push(tag);
+					}
+					self.addCustomTag = function() {
+						console.log(self.newCustomTag());
+						self.tags.push(self.newCustomTag());
 					}
 				},
 				NoteModel : function(data) {

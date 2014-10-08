@@ -1,6 +1,8 @@
 body {
-	/*background-color: #91DBB9;*/
 	background-color: #F5F5F5;
+}
+.title {
+	font-family: 'Shadows Into Light', cursive;
 }
 .sidebar {
 	position: fixed;
@@ -9,22 +11,20 @@ body {
 	top: 0;
 	width: 32rem; 
 	text-align: center;
-	/*background-color: #3DB680;*/
 	background-color: #1ABC9C;
-	border-right: 3px solid #383838;  
+	border-right: 1px solid #383838;  
 }
-.sidebar h1, h2, h3, h4, h5, h6 {
+.sidebar {
 	color: white;
 }
 .sidebar ul {
-	text-align: left; 
-	color: white; 
+	text-align: left;
 	list-style: none;
 }
 .content {
 	margin-left: 32rem;
 }
-.content h1, h2, h3, h4, h5, h6 {
+.content {
 	color: black;
 }
 .note {
@@ -50,8 +50,9 @@ body {
 .note span {
 	margin-left: 1rem;
 }
-.done {
-	background-color: #E7A5C9;
+.tag {
+	background-color: #333;
+	color: #CECECE;
 }
 .note button {
 	margin-left: 1rem;
