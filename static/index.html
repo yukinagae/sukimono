@@ -116,7 +116,9 @@
 						data.forEach(function (row) {
 							var note = new Model.fn.NoteModel(row);
 							Model.va.vmodel.notes.push(note);
-							Model.va.vmodel.tags.push(row.tags);
+							row.tags.forEach(function(t) {
+								Model.va.vmodel.tags.push(t);				
+							})
 						});
 					});
 				}
