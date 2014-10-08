@@ -12,20 +12,22 @@
 			<ul>
 				<li>Id</li>
 				<li>
-					<input data-bind="value: newId" style="width: 6rem;"/>
+					<input data-bind="value: newNote().id" style="width: 6rem;"/>
 				</li>
+				<li>UUID</li>
+				<span data-bind="text: newNote().uuid"></span>
 				<li>Name</li>
 				<li>
-					<input data-bind="value: newName" style="width: 24rem;"/>
+					<input data-bind="value: newNote().name" style="width: 24rem;"/>
 				</li>
 				<li>Content</li>
 				<li>
-					<textarea data-bind="value: newContent" style="width: 24rem; height: 8rem;"></textarea>
+					<textarea data-bind="value: newNote().content" style="width: 24rem; height: 8rem;"></textarea>
 				</li>
 				<li>Tags</li>
 				<li>
-					<div data-bind="foreach: newTagModels">
-						<span class="done"><a href='#' data-bind='click: $parent.removeTag'>X</a><span class="done" data-bind="text: $data.Name"></span></span>
+					<div data-bind="foreach: newNote().tags">
+						<span class="done"><a href='#' data-bind='click: $parent.removeTag'>X</a><span class="done" data-bind="text: $data"></span></span>
 					</div>
 
 				</li>
@@ -38,13 +40,13 @@
 	
 	<div class="content" data-bind="foreach: notes">
 		<div class="note" data-bind="click: $data.edit">
-			<h4 data-bind="text: $data.Name"></h4>
-			<!-- <button type="submit" data-bind="click: $data.edit">Edit</button> -->
-			<button type="submit" data-bind="click: $data.putTag">Tag</button>
+			<h4 data-bind="text: $data.name"></h4>
+			<span data-bind="text: $data.created"></span>
+			<span data-bind="text: $data.uuid"></span>
 			<hr/>
-			<pre data-bind="text: $data.Content"></pre>
-			<div data-bind="foreach: $data.TagModels">
-				<span class="done" data-bind="text: $data.Name"></span>
+			<pre data-bind="text: $data.content"></pre>
+			<div data-bind="foreach: $data.tags">
+				<span class="done" data-bind="text: $data"></span>
 			</div>
 
 		</div>
@@ -61,69 +63,39 @@
 				NoteModels : function() {
 					var self = this;
 					self.notes = ko.observableArray();
-					self.newId = ko.observable("");
-					self.newName = ko.observable("");
-					self.newContent = ko.observable("");
-					self.newTagModels = ko.observableArray([]);
+					self.newNote = ko.observable(new Model.fn.NoteModel({}));
 					self.saveNote = function() {
-						var note = new Model.fn.NoteModel({});
-						note.Id(self.newId());
-						note.Name(self.newName());
-						note.Content(self.newContent());
-						note.TagModels(self.newTagModels());
-
-						note.TagModels().forEach(function(t){
-							note.Tags.push(t.Id);
-						});
-
-						$.post("/api/save", ko.toJSON(note), function(data) {
-							self.notes().forEach(function(n, i){
-								if(n.Id() === note.Id()) {
-									console.log("hoge");
-									Model.va.vmodel.notes.remove(n);
-								}
-							});
-							note.Id(data.Id);
-							Model.va.vmodel.notes.push(note);
+						$.post("/api/save", ko.toJSON(self.newNote()), function(data) {
+							var n = new Model.fn.NoteModel({});
+							n.id(data.id || '');
+							n.uuid(data.uuid || '');
+							n.name(data.name || '');
+							n.content(data.content || '');
+							n.tags(data.tags || []);
+							n.created(data.created || '');
+							Model.va.vmodel.notes.push(n);
 						});
 					}
-
 					self.removeTag = function(tag) {
-						console.log(tag);
-						console.log(this);
-						console.log(self);
-						self.newTagModels.remove(tag);
+						self.newNote().tags.remove(tag);
 					}
-
 				},
 				NoteModel : function(data) {
 					var self = this;
-					self.Id = ko.observable(data.Id || '');
-					self.Name = ko.observable(data.Name || '');
-					self.Content = ko.observable(data.Content || '');
-					self.Tags = ko.observableArray(data.Tags || []);
-					self.TagModels = ko.observableArray();
+					self.id = ko.observable(data.id || '');
+					self.uuid = ko.observable(data.uuid || '');
+					self.name = ko.observable(data.name || '');
+					self.content = ko.observable(data.content || '');
+					self.tags = ko.observableArray(data.tags || []);
+					self.created =  ko.observable(data.created || '');
 					self.edit = function(note) {
-						console.log(note);
-						Model.va.vmodel.newId(note.Id() || '');
-						Model.va.vmodel.newName(note.Name() || '');
-						Model.va.vmodel.newContent(note.Content() || '');
-						Model.va.vmodel.newTagModels(note.TagModels() || []);
-					}
-					self.putTag = function(note) {
-						console.log(note);
-						Model.va.vmodel.newTagModels.push(note);
+						Model.va.vmodel.newNote(note);
 					}
 				},
 				allList : function() {
 					$.getJSON("/api/list", function (data) {
 						data.forEach(function (row) {
 							var note = new Model.fn.NoteModel(row);
-							note.Tags().forEach(function(id) {
-								$.getJSON("/api/" + id, function (d) {
-									note.TagModels.push(d);
-								});
-							});
 							Model.va.vmodel.notes.push(note);
 						});
 					});

@@ -1,14 +1,19 @@
 package repository
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"fmt"
+	"time"
 )
 
 type Note struct {
-	Id      int
-	Name    string
-	Content string
-	Tags    []int
+	Id      int       `json:"id"`
+	UUId    string    `json:"uuid"`
+	Name    string    `json:"name"`
+	Content string    `json:"content"`
+	Tags    []string  `json:"tags"`
+	Created time.Time `json:"created"`
 }
 
 type Repository struct {
@@ -27,9 +32,11 @@ func NewRepo() *Repository {
 func NewNote(name string, content string) Note {
 	return Note{
 		Id:      1,
+		UUId:    createUUID(name),
 		Name:    name,
 		Content: content,
-		Tags:    make([]int, 0),
+		Tags:    []string{},
+		Created: time.Now(),
 	}
 }
 
@@ -38,23 +45,6 @@ func (repo *Repository) Insert(n Note) *Note {
 	repo.notes = append(repo.notes, &n)
 	repo.Id = repo.Id + 1
 	return &n
-}
-
-func (repo *Repository) Update(n Note) *Note {
-	note := repo.Select(n.Id)
-	note.Name = n.Name
-	note.Content = n.Content
-	note.Tags = n.Tags
-	return note
-}
-
-func (repo *Repository) Save(n Note) *Note {
-	note := repo.Select(n.Id)
-	if note == nil {
-		return repo.Insert(n)
-	} else {
-		return repo.Update(n)
-	}
 }
 
 func (repo *Repository) List() []*Note {
@@ -82,12 +72,11 @@ func (repo *Repository) Dump() {
 	}
 }
 
-// func main() {
-// 	repo := NewRepo()
-// 	n1 := NewNote("name1", "content1")
-// 	repo.Insert(n1)
-// 	n2 := NewNote("name2", "content1")
-// 	n2.Id = 0
-// 	repo.Update(n2)
-// 	repo.Dump()
-// }
+func createUUID(name string) string {
+
+	hasher := sha1.New()
+	hasher.Write([]byte(name))
+	sha := hasher.Sum(nil)
+	s := hex.EncodeToString(sha)
+	return s
+}

@@ -7,6 +7,7 @@ import (
 	"github.com/yukinagae/sukimono/repository"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type Context struct {
@@ -63,8 +64,9 @@ func SaveHandler(c *Context) http.HandlerFunc {
 		var note repository.Note
 
 		decoder.Decode(&note)
+		note.Created = time.Now()
 
-		n := c.Repo.Save(note)
+		n := c.Repo.Insert(note)
 
 		js, _ := json.Marshal(n)
 
@@ -72,20 +74,6 @@ func SaveHandler(c *Context) http.HandlerFunc {
 		w.Write(js)
 	}
 }
-
-// func UpdateHandler(c *Context) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		decoder := json.NewDecoder(r.Body)
-// 		var note repository.Note
-
-// 		decoder.Decode(&note)
-// 		n := c.Repo.Update(note)
-// 		js, _ := json.Marshal(n)
-
-// 		w.Header().Set("Content-Type", "application/json")
-// 		w.Write(js)
-// 	}
-// }
 
 func main() {
 
@@ -96,17 +84,16 @@ func main() {
 
 	// TODO dummy data
 	n1 := repository.NewNote("name1", "content1")
-	n1.Tags = []int{1}
+	n1.Tags = []string{"hoge1"}
 	c.Repo.Insert(n1)
 	n2 := repository.NewNote("name2", "content2")
-	n2.Tags = []int{1, 2}
+	n2.Tags = []string{"hoge1", "done"}
 	c.Repo.Insert(n2)
 
 	// routing
 	r.HandleFunc("/api/list", ListHandler(c)).Methods("GET")
 	r.HandleFunc("/api/{id}", FindHandler(c)).Methods("GET")
 	r.HandleFunc("/api/save", SaveHandler(c)).Methods("POST")
-	// r.HandleFunc("/api/edit", UpdateHandler(c)).Methods("POST")
 
 	// static files
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
