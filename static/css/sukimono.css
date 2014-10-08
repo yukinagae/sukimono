@@ -11,7 +11,7 @@ body {
 	text-align: center;
 	/*background-color: #3DB680;*/
 	background-color: #1ABC9C;
-	border-right: 6px solid black;  
+	border-right: 3px solid #383838;  
 }
 .sidebar h1, h2, h3, h4, h5, h6 {
 	color: white;
@@ -45,7 +45,7 @@ body {
 	margin-left: 1rem;
 }
 .note hr {
-	border: 1px solid gray;
+	border: 1px solid #CECECE;
 }
 .note span {
 	margin-left: 1rem;
