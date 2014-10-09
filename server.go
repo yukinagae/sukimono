@@ -64,9 +64,10 @@ func SaveHandler(c *Context) http.HandlerFunc {
 		var note repository.Note
 
 		decoder.Decode(&note)
-		note.Created = time.Now()
+		note.Created = time.Now().Unix()
 
 		n := c.Repo.Insert(note)
+		repository.Index(n)
 
 		js, _ := json.Marshal(n)
 
@@ -75,7 +76,7 @@ func SaveHandler(c *Context) http.HandlerFunc {
 	}
 }
 
-func main() {
+func hoge() {
 
 	r := mux.NewRouter()
 
@@ -101,4 +102,18 @@ func main() {
 	// start HTTP server
 	http.Handle("/", r)
 	http.ListenAndServe(":3000", nil)
+}
+
+func main() {
+
+	// n1 := repository.NewNote("name1", "content1")
+	// n1.Tags = []string{"hoge1"}
+	// n2 := repository.NewNote("name2", "content2")
+	// n2.Tags = []string{"hoge1", "done"}
+	// n1a := ctx.Repo.Insert(n1)
+	// n2a := ctx.Repo.Insert(n2)
+	// repository.Index(n1a)
+	// repository.Index(n2a)
+	repository.Search()
+	// repository.DeleteIndex()
 }
