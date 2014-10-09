@@ -8,12 +8,12 @@ import (
 )
 
 type Note struct {
-	Id      int       `json:"id"`
-	UUId    string    `json:"uuid"`
-	Name    string    `json:"name"`
-	Content string    `json:"content"`
-	Tags    []string  `json:"tags"`
-	Created time.Time `json:"created"`
+	Id      int      `json:"id"`
+	UUId    string   `json:"uuid"`
+	Name    string   `json:"name"`
+	Content string   `json:"content"`
+	Tags    []string `json:"tags"`
+	Created int64    `json:"created"`
 }
 
 type Repository struct {
@@ -36,7 +36,7 @@ func NewNote(name string, content string) Note {
 		Name:    name,
 		Content: content,
 		Tags:    []string{},
-		Created: time.Now(),
+		Created: time.Now().Unix(),
 	}
 }
 
