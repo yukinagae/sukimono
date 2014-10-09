@@ -1,85 +1,55 @@
 package repository
 
 import (
-	// "encoding/json"
+	"encoding/json"
 	"fmt"
-	"github.com/belogik/goes"
 	elastigo "github.com/mattbaird/elastigo/lib"
 	"strconv"
-	"strings"
 )
 
-var (
-	ES_HOST = "localhost"
-	ES_PORT = "9200"
-)
+var ID = 0
 
-func Search() {
-	conn := goes.NewConnection(ES_HOST, ES_PORT)
+func Search(query string) []Note {
+	conn := Connect()
 
-	docType := "note"
-	indexName := "sukimono"
+	out, _ := conn.Search("sukimono", "note", nil, "")
 
-	queyr := map[string]interface{}{
-		"query": map[string]interface{}{
-			"filtered": map[string]interface{}{
-				"filter": map[string]interface{}{
-				// "term": map[string]interface{}{
-				// 	"uuid": "9b46b0dd3a8083c070c3b9953bb5f3f95c5ab4da",
-				// },
-				},
-			},
-		},
+	var notes []Note
+
+	for _, v := range out.Hits.Hits {
+		var raw *json.RawMessage
+		raw = v.Source
+		j, err := json.Marshal(&raw)
+		if err != nil {
+			panic(err)
+		}
+		var n Note
+		json.Unmarshal(j, &n)
+		id, _ := strconv.Atoi(v.Id)
+		n.Id = id
+		notes = append(notes, n)
 	}
-
-	res, _ := conn.Search(queyr, []string{indexName}, []string{docType}, nil)
-
-	for _, v := range res.Hits.Hits {
-		fmt.Println(v.Source)
-		mup := v.Source
-		var note Note
-		note.Id = int(mup["id"].(float64))
-		note.UUId = mup["uuid"].(string)
-		note.Name = mup["name"].(string)
-		note.Content = mup["content"].(string)
-		note.Tags = strings.Split(mup["tags"].(string), ",")
-		note.Created = int64(mup["created"].(float64))
-		fmt.Println(note)
-	}
+	fmt.Println(notes)
+	return notes
 }
 
-func Index(note *Note) {
-	fmt.Println("elastic")
+func Connect() *elastigo.Conn {
+	conn := elastigo.NewConn()
+	fmt.Println(conn)
+	conn.Domain = "localhost"
+	conn.Port = "9200"
+	return conn
+}
 
-	indexName := "sukimono"
-
-	conn := goes.NewConnection(ES_HOST, ES_PORT)
-	// defer conn.DeleteIndex(indexName)
-
-	fmt.Println(note)
-
-	docType := "note"
-	docId := strconv.Itoa(note.Id)
-
-	d := goes.Document{
-		Index: indexName,
-		Type:  docType,
-		Id:    docId,
-		Fields: map[string]interface{}{
-			"id":      note.Id,
-			"uuid":    note.UUId,
-			"name":    note.Name,
-			"content": note.Content,
-			"tags":    strings.Join(note.Tags, ","),
-			"created": note.Created,
-		},
-	}
-
-	conn.Index(d, nil)
+func Index(note Note) Note {
+	conn := Connect()
+	v, _ := conn.Index("sukimono", "note", strconv.Itoa(ID), nil, &note)
+	ID = ID + 1
+	fmt.Println(v)
+	return note
 }
 
 func DeleteIndex() {
-	indexName := "sukimono"
-	conn := goes.NewConnection(ES_HOST, ES_PORT)
-	defer conn.DeleteIndex(indexName)
+	conn := Connect()
+	defer conn.DeleteIndex("sukimono")
 }
